@@ -1,9 +1,11 @@
-from explain import explain_prediction
 from flask import Flask, request, jsonify
 import joblib
 import re
+from explain import explain_prediction
+
 
 app = Flask(__name__)
+
 
 # Load saved model and vectorizer
 model = joblib.load("saved_model/fake_news_model.pkl")
@@ -26,37 +28,71 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.get_json()
 
-    text = data.get("text", "")
+    try:
+        data = request.get_json()
 
-    cleaned_text = clean_text(text)
+        if not data:
+            return jsonify({
+                "error": "No JSON data received"
+            }), 400
 
-    vectorized_text = vectorizer.transform([cleaned_text])
+        text = data.get("text", "")
 
-    prediction = model.predict(vectorized_text)[0]
+        if not text.strip():
+            return jsonify({
+                "error": "No text provided"
+            }), 400
 
-    probabilities = model.predict_proba(vectorized_text)[0]
 
-    confidence = max(probabilities) * 100
+        # Clean article text
+        cleaned_text = clean_text(text)
 
-    explanation = explain_prediction(text)
 
-    important_words = []
+        # Convert text to TF-IDF
+        vectorized_text = vectorizer.transform([cleaned_text])
 
-    for word, weight in explanation:
-        important_words.append({
-            "word": word,
-            "weight": round(weight, 4)
+
+        # Make prediction
+        prediction = model.predict(vectorized_text)[0]
+
+
+        # Get calibrated probabilities
+        probabilities = model.predict_proba(vectorized_text)[0]
+
+
+        # Get the probability of the predicted class
+        confidence = probabilities[prediction] * 100
+
+
+        # Generate LIME explanation
+        explanation = explain_prediction(cleaned_text)
+
+
+        # The explanation is already a list of dictionaries
+        important_words = explanation
+
+
+        # Convert prediction number to label
+        result = "Real News" if prediction == 1 else "Fake News"
+
+
+        return jsonify({
+            "prediction": result,
+            "confidence": round(float(confidence), 2),
+            "important_words": important_words
         })
 
-    result = "Real News" if prediction == 1 else "Fake News"
 
-    return jsonify({
-        "prediction": result,
-        "confidence": round(confidence, 2),
-        "important_words": important_words
-    })
+    except Exception as e:
+
+        print("\nERROR IN /predict:")
+        print(e)
+
+        return jsonify({
+            "error": str(e)
+        }), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,73 +1,309 @@
-    document.getElementById("analyzeBtn").addEventListener("click", async () => {
+const analyzeButton = document.getElementById("analyzeBtn");
 
-    const [tab] = await chrome.tabs.query({
-    active: true,
-    currentWindow: true
-    });
+const statusText = document.getElementById("status");
 
-    chrome.tabs.sendMessage(
-    tab.id,
-    { action: "extractText" },
-    async (response) => {
+const resultCard = document.getElementById("resultCard");
 
-        if (!response || !response.text) {
+const resultText = document.getElementById("result");
 
-            document.getElementById("result").textContent =
-                "Unable to read page.";
+const confidenceText = document.getElementById("confidence");
 
-            return;
+const progressBar = document.getElementById("progressBar");
+
+const wordsSection = document.getElementById("wordsSection");
+
+const wordsList = document.getElementById("words");
+
+
+analyzeButton.addEventListener("click", async () => {
+
+    // Reset interface
+
+    resultCard.style.display = "none";
+
+    wordsSection.style.display = "none";
+
+    statusText.textContent = "Analyzing article...";
+
+    analyzeButton.disabled = true;
+
+    analyzeButton.textContent = "⏳ Analyzing...";
+
+
+    try {
+
+        // Get current tab
+
+        const [tab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        });
+
+
+        // Make sure a tab exists
+
+        if (!tab || !tab.id) {
+
+            throw new Error("No active tab found.");
+
         }
 
-        try {
 
-            const apiResponse = await fetch(
-                "http://127.0.0.1:5000/predict",
-                {
-                    method: "POST",
+        // Extract article text
 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+        chrome.tabs.sendMessage(
+            tab.id,
+            { action: "extractText" },
 
-                    body: JSON.stringify({
-                        text: response.text
-                    })
+            async (response) => {
+
+                // Check Chrome runtime error
+
+                if (chrome.runtime.lastError) {
+
+                    statusText.textContent =
+                        "Unable to read this page.";
+
+                    resetButton();
+
+                    return;
                 }
-            );
 
-            const result = await apiResponse.json();
 
-            document.getElementById("result").textContent =
-                "Prediction: " + result.prediction;
+                // Check extracted text
 
-            document.getElementById("confidence").textContent =
-                "Confidence: " + result.confidence + "%";
+                if (!response || !response.text) {
 
-            const list = document.getElementById("words");
+                    statusText.textContent =
+                        "Unable to read page.";
 
-            list.innerHTML = "";
+                    resetButton();
 
-            result.important_words.forEach(item => {
+                    return;
+                }
 
-                const li = document.createElement("li");
 
-                li.textContent =
-                    item.word + " (" + item.weight + ")";
+                try {
 
-                list.appendChild(li);
+                    // Send article to Flask
 
-            });
+                    const apiResponse = await fetch(
+                        "http://127.0.0.1:5000/predict",
+                        {
+                            method: "POST",
 
-        } catch (error) {
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
 
-            document.getElementById("result").textContent =
-                "Cannot connect to Flask API.";
+                            body: JSON.stringify({
+                                text: response.text
+                            })
+                        }
+                    );
 
-            console.error(error);
 
-        }
+                    // Check API response
+
+                    if (!apiResponse.ok) {
+
+                        const errorText =
+                            await apiResponse.text();
+
+                        console.error(
+                            "Flask API error:",
+                            errorText
+                        );
+
+                        statusText.textContent =
+                            "API error: " +
+                            apiResponse.status;
+
+                        resetButton();
+
+                        return;
+                    }
+
+
+                    // Convert response to JSON
+
+                    const result =
+                        await apiResponse.json();
+
+
+                    // Display result
+
+                    displayResult(result);
+
+
+                    // Reset button
+
+                    resetButton();
+
+                } catch (error) {
+
+                    console.error(
+                        "API connection error:",
+                        error
+                    );
+
+                    statusText.textContent =
+                        "Cannot connect to Flask API.";
+
+                    resetButton();
+
+                }
+
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Extension error:",
+            error
+        );
+
+        statusText.textContent =
+            "Something went wrong.";
+
+        resetButton();
 
     }
+
+});
+
+
+/* ==========================================
+    DISPLAY RESULT
+   ========================================== */
+
+function displayResult(result) {
+
+    const prediction = result.prediction;
+
+    const confidence = Number(result.confidence);
+
+
+    // Remove status message
+
+    statusText.textContent = "";
+
+
+    // Show result card
+
+    resultCard.style.display = "block";
+
+
+    // Prediction text
+
+    resultText.textContent = prediction;
+
+
+    // Confidence
+
+    confidenceText.textContent =
+        "Confidence: " + confidence + "%";
+
+
+    // Confidence bar
+
+    progressBar.style.width =
+        confidence + "%";
+
+
+    // Prediction-specific styling
+
+    if (prediction === "Real News") {
+
+        resultText.style.color = "#15803d";
+
+        progressBar.style.background =
+            "#22c55e";
+
+    } else {
+
+        resultText.style.color = "#dc2626";
+
+        progressBar.style.background =
+            "#ef4444";
+
+    }
+
+
+    // Display important words
+
+    displayImportantWords(
+        result.important_words
     );
 
+}
+
+
+/* ==========================================
+    DISPLAY IMPORTANT WORDS
+   ========================================== */
+
+function displayImportantWords(words) {
+
+    wordsList.innerHTML = "";
+
+
+    if (!words || words.length === 0) {
+
+        wordsSection.style.display = "none";
+
+        return;
+    }
+
+
+    wordsSection.style.display = "block";
+
+
+    words.forEach(item => {
+
+        const li = document.createElement("li");
+
+
+        const word = document.createElement("span");
+
+        word.className = "word-name";
+
+        word.textContent = item.word;
+
+
+        const weight = document.createElement("span");
+
+        weight.className = "word-weight";
+
+        const sign =
+            item.weight >= 0 ? "+" : "";
+
+        weight.textContent =
+            sign + item.weight;
+
+
+        li.appendChild(word);
+
+        li.appendChild(weight);
+
+
+        wordsList.appendChild(li);
+
     });
+
+}
+
+
+/* ==========================================
+    RESET BUTTON
+   ========================================== */
+
+function resetButton() {
+
+    analyzeButton.disabled = false;
+
+    analyzeButton.textContent =
+        "🔍 Analyze Current Page";
+
+}

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
+
     <title>Fake News Detector</title>
 
     <link rel="stylesheet" href="popup.css">
@@ -9,21 +11,82 @@
 
 <body>
 
-<h2>📰 Fake News Detector</h2>
+    <!-- Header -->
+    <div class="header">
 
-<button id="analyzeBtn">
-    Analyze Current Page
-</button>
+        <h2>📰 Fake News Detector</h2>
 
-<hr>
+        <p>
+            AI-powered news article analysis
+        </p>
 
-<p id="result"></p>
+    </div>
 
-<p id="confidence"></p>
 
-<ul id="words"></ul>
+    <!-- Analyze button -->
 
-<script src="popup.js"></script>
+    <button id="analyzeBtn">
+        🔍 Analyze Current Page
+    </button>
+
+
+    <!-- Status message -->
+
+    <p id="status"></p>
+
+
+    <!-- Prediction card -->
+
+    <div class="result-card" id="resultCard">
+
+        <p id="result">
+            Prediction
+        </p>
+
+        <p id="confidence">
+            Confidence: --
+        </p>
+
+
+        <!-- Confidence bar -->
+
+        <div class="progress-container">
+
+            <div id="progressBar"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Important words -->
+
+    <div class="words-section" id="wordsSection">
+
+        <h3>
+            🧠 Important Words
+        </h3>
+
+        <p class="words-description">
+            Words that influenced the model's prediction.
+        </p>
+
+        <ul id="words"></ul>
+
+    </div>
+
+
+    <!-- Footer -->
+
+    <div class="footer">
+
+        TF-IDF + Calibrated Linear SVM + LIME
+
+    </div>
+
+
+    <script src="popup.js"></script>
 
 </body>
+
 </html>

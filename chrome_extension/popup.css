@@ -1,25 +1,227 @@
-body{
-    width:320px;
-    padding:15px;
-    font-family:Arial, sans-serif;
+* {
+    box-sizing: border-box;
 }
 
-button{
-    width:100%;
-    padding:10px;
-    font-size:16px;
-    cursor:pointer;
+body {
+    width: 360px;
+    min-height: 420px;
+    margin: 0;
+    padding: 20px;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #f5f7fb;
+    color: #1f2937;
 }
 
-#result{
-    font-weight:bold;
-    margin-top:15px;
+
+/* ==============================
+    HEADER
+   ============================== */
+
+.header {
+    text-align: center;
+    margin-bottom: 18px;
 }
 
-#confidence{
-    color:blue;
+.header h2 {
+    margin: 0;
+    font-size: 21px;
+    color: #111827;
 }
 
-li{
-    margin-bottom:4px;
+.header p {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+
+/* ==============================
+    ANALYZE BUTTON
+   ============================== */
+
+#analyzeBtn {
+    width: 100%;
+    padding: 12px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #2563eb;
+    color: white;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+#analyzeBtn:hover {
+    background: #1d4ed8;
+}
+
+#analyzeBtn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+
+/* ==============================
+    STATUS
+   ============================== */
+
+#status {
+    margin: 14px 0;
+    text-align: center;
+
+    font-size: 12px;
+    color: #6b7280;
+}
+
+
+/* ==============================
+    RESULT CARD
+   ============================== */
+
+.result-card {
+    display: none;
+
+    margin-top: 15px;
+    padding: 18px;
+
+    background: white;
+
+    border-radius: 12px;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+
+    text-align: center;
+}
+
+
+/* Prediction */
+
+#result {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+/* Confidence */
+
+#confidence {
+    margin: 8px 0;
+
+    font-size: 15px;
+    font-weight: bold;
+}
+
+
+/* ==============================
+    CONFIDENCE BAR
+   ============================== */
+
+.progress-container {
+    width: 100%;
+    height: 9px;
+
+    margin-top: 12px;
+
+    background: #e5e7eb;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+#progressBar {
+    width: 0%;
+    height: 100%;
+
+    border-radius: 10px;
+
+    transition: width 0.5s ease;
+}
+
+
+/* ==============================
+    IMPORTANT WORDS
+   ============================== */
+
+.words-section {
+    display: none;
+
+    margin-top: 18px;
+
+    background: white;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.words-section h3 {
+    margin: 0 0 10px;
+
+    font-size: 14px;
+    color: #111827;
+}
+
+.words-description {
+    margin: 0 0 10px;
+
+    font-size: 11px;
+    color: #6b7280;
+}
+
+#words {
+    list-style: none;
+
+    margin: 0;
+    padding: 0;
+}
+
+#words li {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 7px 0;
+
+    border-bottom: 1px solid #f0f0f0;
+
+    font-size: 12px;
+}
+
+#words li:last-child {
+    border-bottom: none;
+}
+
+.word-name {
+    font-weight: 600;
+}
+
+.word-weight {
+    font-family: monospace;
+    color: #6b7280;
+}
+
+
+/* ==============================
+    FOOTER
+   ============================== */
+
+.footer {
+    margin-top: 18px;
+
+    text-align: center;
+
+    font-size: 10px;
+    color: #9ca3af;
 }
