@@ -15,8 +15,9 @@ from sklearn.metrics import accuracy_score, classification_report
 
 print("Loading datasets...")
 
-fake = pd.read_csv("dataset/Fake.csv")
 true = pd.read_csv("dataset/True.csv")
+# Randomly sample the fake dataset to match the true dataset size exactly
+fake = pd.read_csv("dataset/Fake.csv").sample(n=len(true), random_state=42)
 
 print(f"Fake news articles: {len(fake)}")
 print(f"Real news articles: {len(true)}")
