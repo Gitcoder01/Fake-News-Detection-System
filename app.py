@@ -44,45 +44,35 @@ def predict():
                 "error": "No text provided"
             }), 400
 
-
         # Clean article text
         cleaned_text = clean_text(text)
-
 
         # Convert text to TF-IDF
         vectorized_text = vectorizer.transform([cleaned_text])
 
-
         # Make prediction
         prediction = model.predict(vectorized_text)[0]
-
 
         # Get calibrated probabilities
         probabilities = model.predict_proba(vectorized_text)[0]
 
-
         # Get the probability of the predicted class
         confidence = probabilities[prediction] * 100
-
 
         # Generate LIME explanation
         explanation = explain_prediction(cleaned_text)
 
-
         # The explanation is already a list of dictionaries
         important_words = explanation
 
-
         # Convert prediction number to label
         result = "Real News" if prediction == 1 else "Fake News"
-
 
         return jsonify({
             "prediction": result,
             "confidence": round(float(confidence), 2),
             "important_words": important_words
         })
-
 
     except Exception as e:
 

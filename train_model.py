@@ -8,7 +8,6 @@ from sklearn.svm import LinearSVC
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import accuracy_score, classification_report
 
-
 # ==========================================
 # 1. LOAD DATASETS
 # ==========================================
