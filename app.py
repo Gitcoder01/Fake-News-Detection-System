@@ -15,8 +15,8 @@ vectorizer = joblib.load("saved_model/tfidf_vectorizer.pkl")
 # Text cleaning function
 def clean_text(text):
     text = str(text).lower()
-    text = re.sub(r"http\S+", "", text)
-    text = re.sub(r"[^a-zA-Z\s]", "", text)
+    text = re.sub(r"http\S+|www\S+", "", text)
+    text = re.sub(r"[^a-zA-Z\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
