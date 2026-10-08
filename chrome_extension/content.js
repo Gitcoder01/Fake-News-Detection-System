@@ -26,7 +26,6 @@ function getPageContent() {
         });
     });
 
-
     // Common article containers
     const selectors = [
         "article",
@@ -45,7 +44,6 @@ function getPageContent() {
         ".story-text"
     ];
 
-
     // Try to find the main article
     for (const selector of selectors) {
 
@@ -62,7 +60,6 @@ function getPageContent() {
         }
     }
 
-
     // Fallback
     const bodyText = document.body.innerText.trim();
 
@@ -70,11 +67,9 @@ function getPageContent() {
         return bodyText;
     }
 
-
     // Nothing useful found
     return "";
 }
-
 
 // Listen for requests from popup
 chrome.runtime.onMessage.addListener(

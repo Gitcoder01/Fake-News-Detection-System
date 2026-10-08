@@ -43,7 +43,6 @@ def predict():
             return jsonify({
                 "error": "No text provided"
             }), 400
-
         # Clean article text
         cleaned_text = clean_text(text)
 

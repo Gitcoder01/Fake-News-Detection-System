@@ -29,7 +29,6 @@ analyzeButton.addEventListener("click", async () => {
 
     analyzeButton.textContent = "⏳ Analyzing...";
 
-
     try {
 
         // Get current tab
@@ -39,7 +38,6 @@ analyzeButton.addEventListener("click", async () => {
             currentWindow: true
         });
 
-
         // Make sure a tab exists
 
         if (!tab || !tab.id) {
@@ -47,7 +45,6 @@ analyzeButton.addEventListener("click", async () => {
             throw new Error("No active tab found.");
 
         }
-
 
         // Extract article text
 
@@ -69,7 +66,6 @@ analyzeButton.addEventListener("click", async () => {
                     return;
                 }
 
-
                 // Check extracted text
 
                 if (!response || !response.text) {
@@ -81,7 +77,6 @@ analyzeButton.addEventListener("click", async () => {
 
                     return;
                 }
-
 
                 try {
 
@@ -101,7 +96,6 @@ analyzeButton.addEventListener("click", async () => {
                             })
                         }
                     );
-
 
                     // Check API response
 
@@ -124,17 +118,14 @@ analyzeButton.addEventListener("click", async () => {
                         return;
                     }
 
-
                     // Convert response to JSON
 
                     const result =
                         await apiResponse.json();
 
-
                     // Display result
 
                     displayResult(result);
-
 
                     // Reset button
 
@@ -174,9 +165,7 @@ analyzeButton.addEventListener("click", async () => {
 });
 
 
-/* ==========================================
-    DISPLAY RESULT
-   ========================================== */
+/* DISPLAY RESULT */
 
 function displayResult(result) {
 
@@ -184,33 +173,27 @@ function displayResult(result) {
 
     const confidence = Number(result.confidence);
 
-
     // Remove status message
 
     statusText.textContent = "";
-
 
     // Show result card
 
     resultCard.style.display = "block";
 
-
     // Prediction text
 
     resultText.textContent = prediction;
-
 
     // Confidence
 
     confidenceText.textContent =
         "Confidence: " + confidence + "%";
 
-
     // Confidence bar
 
     progressBar.style.width =
         confidence + "%";
-
 
     // Prediction-specific styling
 
@@ -230,7 +213,6 @@ function displayResult(result) {
 
     }
 
-
     // Display important words
 
     displayImportantWords(
@@ -240,14 +222,11 @@ function displayResult(result) {
 }
 
 
-/* ==========================================
-    DISPLAY IMPORTANT WORDS
-   ========================================== */
+/* DISPLAY IMPORTANT WORDS */
 
 function displayImportantWords(words) {
 
     wordsList.innerHTML = "";
-
 
     if (!words || words.length === 0) {
 
@@ -256,21 +235,17 @@ function displayImportantWords(words) {
         return;
     }
 
-
     wordsSection.style.display = "block";
-
 
     words.forEach(item => {
 
         const li = document.createElement("li");
-
 
         const word = document.createElement("span");
 
         word.className = "word-name";
 
         word.textContent = item.word;
-
 
         const weight = document.createElement("span");
 
@@ -282,11 +257,9 @@ function displayImportantWords(words) {
         weight.textContent =
             sign + item.weight;
 
-
         li.appendChild(word);
 
         li.appendChild(weight);
-
 
         wordsList.appendChild(li);
 
@@ -294,10 +267,7 @@ function displayImportantWords(words) {
 
 }
 
-
-/* ==========================================
-    RESET BUTTON
-   ========================================== */
+/* RESET BUTTON */
 
 function resetButton() {
 
